@@ -13,7 +13,7 @@
 - 수식 인식 모델의 ONNX 디코더에 KV캐시가 없고 PyTorch 가중치는 비공개여서, ONNX 가중치를
   `transformers` 모델에 이식해 **KV캐시 포함으로 다시 수출하고 int8로 양자화** → 인식 **4.16배**
 - 인코더는 내장 GPU(DirectML), int8 디코더·수식 검출은 CPU — 장치 배치를 재 보고 정함
-- 실제 교재 9권 7,530쪽, 원본 대조 **문자 일치율 93.8% · 낱말 회수율 96.5%**, 골든 테스트 286건
+- 실제 교재 9권 7,530쪽, 원본 대조 **문자 일치율 93.8% · 낱말 회수율 96.5%**, 골든 테스트 290건
 
 #### [lecture-transcriber](https://github.com/mijnch/lecture-transcriber) — 강의 영상 → 화면까지 읽은 타임스탬프 Markdown
 
