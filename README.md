@@ -29,7 +29,7 @@
 #### [int8-quant-lab](https://github.com/mijnch/int8-quant-lab) — INT8 양자화를 라이브러리 출력과 비트 단위로 맞춰 보기
 
 - MLPerf Tiny 키워드 인식 모델(DS-CNN)에서 TF 2.21 변환기가 정한 scale·zero-point와 int8 값(가중치 22,016개·bias 588개)을 **전부 똑같이 재현**
-- 정수 추론을 numpy로 다시 구현해 LiteRT 세 실행 경로(참조·최적화·XNNPACK)와 테스트 4,890개 전체에서 **불일치 0** — 같은 모델도 경로마다 반올림 규칙이 달라, 5가지를 원문에서 찾아 맞춤
+- 정수 추론을 numpy로 다시 구현해 LiteRT 세 실행 경로(참조·최적화·XNNPACK)와 테스트 4,890개 전체에서 **불일치 0** — 같은 모델도 실행 경로·플랫폼마다 반올림 규칙이 달라, 6가지를 원문에서 찾아 맞춤
 - FP32 92.17% → INT8 92.33%(통계적으로 구별되지 않음), 파일 크기 절반 · 4비트 텐서별 대칭 가중치는 57.4%로 붕괴(시뮬레이션)
 - 계획(범위·지표·정직성 원칙)은 제가 세웠고, **구현·측정·문서는 Claude Code가 수행**
 
@@ -63,7 +63,8 @@ measurement, and the decision to adopt each design are mine.
 - **[int8-quant-lab](https://github.com/mijnch/int8-quant-lab)** — TFLite/LiteRT INT8 quantization
   re-implemented in NumPy and matched bit-for-bit: every scale, zero-point and int8 value the TF 2.21
   converter produced for the MLPerf Tiny KWS model, and the integer outputs of three execution paths
-  (reference, optimized, XNNPACK) on the full test set, which round in five different ways. The plan is
+  (reference, optimized, XNNPACK) on the full test set, which round in six different ways across paths
+  and platforms. The plan is
   mine; implementation, measurement and documentation were done by Claude Code.
 
 Contact: mijnch@gmail.com
