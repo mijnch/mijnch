@@ -3,11 +3,11 @@
 전자전기공학 2학년입니다. **온디바이스 AI** — GPU 서버나 클라우드 없이, 사용자의 기기 안에서
 모델을 빠르고 믿을 수 있게 돌리는 일 — 에 관심이 있습니다.
 
-지금까지 만든 것은 노트북 한 대에서 오프라인으로 도는 인식 파이프라인 두 개입니다.
-둘 다 제 교재와 강의를 AI에게 읽히려고 만든 도구이고, 설계 판단은 **실측 A/B로 정했습니다.**
+지금까지 만든 것은 노트북 한 대에서 오프라인으로 도는 도구 세 개입니다.
+모두 제 교재·강의·시험지를 AI에게 읽히려고 만든 것이고, 설계 판단은 **실측 A/B로 정했습니다.**
 코드는 AI 코딩 도구(Claude Code)와 함께 작성했고, 문제 정의·실측·채택 판단은 제가 했습니다.
 
-세 번째 저장소는 int8 양자화가 실제로 어떤 정수 연산인지 확인하는 실험입니다.
+int8-quant-lab은 int8 양자화가 실제로 어떤 정수 연산인지 확인하는 실험입니다.
 계획은 제가 세웠고, 구현·측정·문서는 Claude Code가 수행했습니다.
 
 ---
@@ -26,6 +26,13 @@
 - 말소리는 있는데 낱말이 없는 구간을 찾아 언어를 새로 정해 다시 읽는 등, **조용한 누락을 드러난 누락으로** 바꿈
 - 단위 검증 152개 + 정답을 아는 합성 강의로 끝까지 돌려 채점하는 종단 검증 47항목
 
+#### [hwp-to-pdf](https://github.com/mijnch/hwp-to-pdf) — 한글 문서(.hwp/.hwpx) → 한컴 없이, 글자까지 맞는 PDF
+
+- 오픈소스 렌더러 rhwp의 PDF는 보기엔 맞지만 글자층이 깨져(pdfium 한글 60~100%, pdfminer 띄어쓰기 0%), 쪽 Form을 펼치고 보이지 않는 공백을 넣어 **추출기 4종 모두 한글 100%** — 그림은 그대로
+- 한컴 원본(문서에 든 1쪽 미리보기, 한컴이 내보낸 PDF 34쌍 615쪽)과 맞대 rhwp 조판을 **8곳 고쳐** 실제 시험지 1쪽 실루엣 일치율 **79.9 → 98.6%**, 8건 모두 상류에 이슈로 올림
+- 변환마다 한컴 미리보기와 스스로 대조해 다르면 "확인 권장" · 157쪽 24초(쪽마다 동시에 그려도 한 번에 내보낸 것과 화소 동일)
+- 단위 검증 90개 + 합성 문서 종단 검증 30항목 + rhwp 공개 시험 문서 312개
+
 #### [int8-quant-lab](https://github.com/mijnch/int8-quant-lab) — INT8 양자화를 라이브러리 출력과 비트 단위로 맞춰 보기
 
 - MLPerf Tiny 키워드 인식 모델(DS-CNN)에서 TF 2.21 변환기가 정한 scale·zero-point와 int8 값(가중치 22,016개·bias 588개)을 **전부 똑같이 재현**
@@ -36,7 +43,8 @@
 ---
 
 **다루어 본 것** · Python · ONNX Runtime (DirectML) · CTranslate2 / faster-whisper · PyTorch · transformers ·
-optimum (ONNX 수출) · 동적 int8 양자화 · Tesseract · ffmpeg · pdfium · NumPy · GitHub Actions
+optimum (ONNX 수출) · 동적 int8 양자화 · Tesseract · ffmpeg · pdfium · pikepdf · rhwp(Rust) 소스 패치·빌드 ·
+NumPy · GitHub Actions
 
 **연락** · mijnch@gmail.com
 
@@ -47,8 +55,8 @@ I'm Minjoon Choi, a second-year Electrical and Electronic Engineering student in
 **on-device AI** — running models fast and reliably on the user's own device, without a GPU server
 or the cloud.
 
-So far I've built two offline recognition pipelines that run on a single laptop, both made so that an
-AI assistant could read my own textbooks and lectures. Design decisions in them were settled by measured
+So far I've built three offline tools that run on a single laptop, all made so that an AI assistant
+could read my own textbooks, lectures and exam papers. Design decisions in them were settled by measured
 A/B comparisons. The code was written with an AI coding assistant (Claude Code); problem definition,
 measurement, and the decision to adopt each design are mine.
 
@@ -60,6 +68,11 @@ measurement, and the decision to adopt each design are mine.
 - **[lecture-transcriber](https://github.com/mijnch/lecture-transcriber)** — recorded lectures to
   timestamped Markdown that includes what was on screen. CPU-only int8 Whisper; slide changes caught
   48/48 within ±1 s on a synthetic lecture; silent omissions turned into marked ones.
+- **[hwp-to-pdf](https://github.com/mijnch/hwp-to-pdf)** — Hangul word-processor files (.hwp/.hwpx)
+  to PDF without Hancom Office. Repaired the open-source renderer rhwp's broken text layer (100% Hangul
+  across four extractors) and, by comparing against Hancom's own renderings, fixed eight layout bugs in
+  rhwp (page-1 silhouette agreement on real exam papers 79.9% → 98.6%; all reported upstream). Each
+  conversion is self-checked against the preview image Hancom stores in the file.
 - **[int8-quant-lab](https://github.com/mijnch/int8-quant-lab)** — TFLite/LiteRT INT8 quantization
   re-implemented in NumPy and matched bit-for-bit: every scale, zero-point and int8 value the TF 2.21
   converter produced for the MLPerf Tiny KWS model, and the integer outputs of three execution paths
