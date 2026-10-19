@@ -25,7 +25,7 @@
 
 - RTN(그룹 128) · QER · 보존-복원 랭크 분할 · 대리지표를 구현해 **SmolLM2-135M·TinyLlama-1.1B의 실제 선형층 49개**(3·4비트)에서 대조: 분할이 QER보다 가중치 오차를 줄이는 정도는 **ρ_r(W) 하나로 결정**(상관 −0.97/−0.98 — 첫 층 q/k에서 41~61%↓, TinyLlama 층 0 q_proj 0.247 → 0.101), 최적은 거의 항상 k=r(전부 보존, 복원 0), 대리지표 후회 ≤3.9%
 - **perplexity(WikiText-2)는 가중치 오차와 반대로 움직임**: 분할이 가중치 오차는 더 낮은데 QER이 훨씬 낫고(3비트 80.9 대 121.1), 층 하나씩 실제 활성값으로 잰 출력 오차로도 설명되지 않음(열린 질문) · 같은 비트 예산에서는 한 비트 더 쓰는 RTN이 둘 다 이김(4비트 RTN 22.7)
-- 논문 재현 아님(양자화기·스케일·탐침을 단순화) · 테스트 58개(Eckart–Young, k=0↔QER, 오차 한계) · CI Ubuntu·Windows
+- 논문 재현 아님(양자화기·스케일·탐침을 단순화) · 테스트 59개(Eckart–Young, k=0↔QER, 오차 한계) · CI Ubuntu·Windows
 - 도구: NumPy · SVD/저랭크 근사 · safetensors 직접 읽기(torch 불필요) · PyTorch/transformers(perplexity) · GitHub Actions
 
 #### [pdf-ocr-korean-textbook](https://github.com/mijnch/pdf-ocr-korean-textbook) — 교재 PDF → 수식까지 살린 Markdown
@@ -90,7 +90,7 @@ definition, measurement, and the decision to adopt each design are mine.
   WikiText-2 moves the other way: the split has the lower weight error yet QER is far better (3-bit
   80.9 vs 121.1), and per-layer output error with real activations does not explain it — an open
   question; at equal bits per weight, one more bit of RTN beats both (4-bit RTN 22.7). Not a paper
-  reproduction. 58 tests. Tools: NumPy, SVD, a torch-free safetensors reader, PyTorch/transformers.
+  reproduction. 59 tests. Tools: NumPy, SVD, a torch-free safetensors reader, PyTorch/transformers.
 - **[pdf-ocr-korean-textbook](https://github.com/mijnch/pdf-ocr-korean-textbook)** — Korean textbook
   PDFs to Markdown with LaTeX math. Rebuilt the formula recognizer with a KV cache and int8
   quantization by transplanting its ONNX weights into a `transformers` model (4.16× faster
