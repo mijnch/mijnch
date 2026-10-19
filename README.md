@@ -23,9 +23,10 @@
 
 #### [lowbit-qer-lab](https://github.com/mijnch/lowbit-qer-lab) — 저비트 양자화 오차의 저랭크 복원(W ≈ Q + LR), numpy 단순화 구현
 
-- RTN(그룹 128) · QER · 보존-복원 랭크 분할 · 대리지표를 구현해 합성 행렬 4종 × 시드 3개에서 대조: 보존(k>0)의 이득은 W에 구조가 있을 때만(이상치 채널 8개 행렬에서 3비트 오차 **0.316 → 0.154**, 대리지표가 k*=8을 정확히 고름), 대리지표 후회 **≤0.21%**, 같은 비트 예산에서 "3비트+저랭크"가 4비트 RTN을 이기는 것은 이상치 행렬뿐
-- 논문 재현 아님(양자화기·스케일·탐침을 단순화) · 실제 LLM 가중치와 perplexity는 **미측정(진행 중)** · 테스트 58개(Eckart–Young, k=0↔QER, 오차 한계)
-- 도구: NumPy · SVD/저랭크 근사 · safetensors 직접 읽기(torch 불필요) · GitHub Actions
+- RTN(그룹 128) · QER · 보존-복원 랭크 분할 · 대리지표를 구현해 **SmolLM2-135M·TinyLlama-1.1B의 실제 선형층 49개**(3·4비트)에서 대조: 분할이 QER보다 가중치 오차를 줄이는 정도는 **ρ_r(W) 하나로 결정**(상관 −0.97/−0.98 — 첫 층 q/k에서 41~61%↓, TinyLlama 층 0 q_proj 0.247 → 0.101), 최적은 거의 항상 k=r(전부 보존, 복원 0), 대리지표 후회 ≤3.9%
+- **perplexity(WikiText-2)는 가중치 오차와 반대로 움직임**: 분할이 가중치 오차는 더 낮은데 QER이 훨씬 낫고(3비트 80.9 대 121.1), 층 하나씩 실제 활성값으로 잰 출력 오차로도 설명되지 않음(열린 질문) · 같은 비트 예산에서는 한 비트 더 쓰는 RTN이 둘 다 이김(4비트 RTN 22.7)
+- 논문 재현 아님(양자화기·스케일·탐침을 단순화) · 테스트 58개(Eckart–Young, k=0↔QER, 오차 한계) · CI Ubuntu·Windows
+- 도구: NumPy · SVD/저랭크 근사 · safetensors 직접 읽기(torch 불필요) · PyTorch/transformers(perplexity) · GitHub Actions
 
 #### [pdf-ocr-korean-textbook](https://github.com/mijnch/pdf-ocr-korean-textbook) — 교재 PDF → 수식까지 살린 Markdown
 
@@ -82,10 +83,14 @@ definition, measurement, and the decision to adopt each design are mine.
   Tools: NumPy, LiteRT, TensorFlow 2.21 (conversion), flatbuffers, GitHub Actions (Linux/Windows).
 - **[lowbit-qer-lab](https://github.com/mijnch/lowbit-qer-lab)** — low-bit weight quantization with
   low-rank error reconstruction (W ≈ Q + LR) in NumPy: group-128 RTN, QER, a preserve-then-quantize
-  rank split and a surrogate for choosing the split, compared on four kinds of synthetic matrices.
-  Preserving helps only when W has structure (eight outlier columns: 3-bit error 0.316 → 0.154, the
-  surrogate picks exactly k* = 8); surrogate regret ≤ 0.21%. Not a paper reproduction; real LLM weights
-  and perplexity are not measured yet. 58 tests. Tools: NumPy, SVD, a torch-free safetensors reader.
+  rank split and a surrogate for choosing the split, compared on 49 real linear layers of
+  SmolLM2-135M and TinyLlama-1.1B. The split's gain over QER in weight error is set by a single number,
+  ρ_r(W) (correlation −0.97/−0.98; first-layer q/k projections gain 41–61%, TinyLlama layer-0 q_proj
+  0.247 → 0.101), the optimum is almost always k = r, and surrogate regret is ≤ 3.9%. Perplexity on
+  WikiText-2 moves the other way: the split has the lower weight error yet QER is far better (3-bit
+  80.9 vs 121.1), and per-layer output error with real activations does not explain it — an open
+  question; at equal bits per weight, one more bit of RTN beats both (4-bit RTN 22.7). Not a paper
+  reproduction. 58 tests. Tools: NumPy, SVD, a torch-free safetensors reader, PyTorch/transformers.
 - **[pdf-ocr-korean-textbook](https://github.com/mijnch/pdf-ocr-korean-textbook)** — Korean textbook
   PDFs to Markdown with LaTeX math. Rebuilt the formula recognizer with a KV cache and int8
   quantization by transplanting its ONNX weights into a `transformers` model (4.16× faster
